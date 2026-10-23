@@ -1,0 +1,65 @@
+name: Build plugin
+
+on:
+  push:
+    branches: [master]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      # On a tag like v1.2.3 the DLL gets version 1.2.3; otherwise the csproj version is used.
+      - name: Pick version
+        id: version
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            echo "args=-p:Version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build plugin
+        run: dotnet build Emby.Bingers.csproj -c Release ${{ steps.version.outputs.args }}
+
+      - name: End-to-end test
+        working-directory: tests
+        run: |
+          python3 fake_bingers.py 8765 &
+          sleep 1
+          dotnet run -c Release
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Emby.Bingers
+          path: bin/Release/netstandard2.0/Emby.Bingers.dll
+          if-no-files-found: error
+
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: Emby.Bingers
+
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" Emby.Bingers.dll \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "$GITHUB_REF_NAME" \
+            --generate-notes
