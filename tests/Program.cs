@@ -68,6 +68,9 @@ internal static class Program
         entry.Run();
 
         Step("Settings page before configuring");
+        var menu = plugin.PageInfo();
+        Check(menu.EnableInMainMenu && menu.DisplayName == "Bingers", "settings page is listed in the dashboard sidebar");
+
         var page = plugin.ShowUI();
         Check(page.UserChoices.Count == 2, "user dropdown lists both Emby users");
         Check(page.Connection.Status == ItemStatus.Unavailable, "connection says 'not configured': " + page.Connection);
