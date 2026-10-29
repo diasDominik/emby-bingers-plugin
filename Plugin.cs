@@ -45,8 +45,6 @@ namespace Emby.Bingers
         public Stream GetThumbImage()
             => this.GetType().Assembly.GetManifestResourceStream(this.GetType().Namespace + ".thumb.png");
 
-        // Adds "Bingers" to the dashboard sidebar. Emby lists plugin pages under Advanced, next to
-        // Open Subtitles, so the sync status and settings are one click away.
         protected override void OnCreatePageInfo(PluginPageInfo pageInfo)
         {
             base.OnCreatePageInfo(pageInfo);
