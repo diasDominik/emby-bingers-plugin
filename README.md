@@ -41,7 +41,7 @@ If the build complains about the Emby SDK, or the plugin doesn't load, change
    - Docker: `/config/plugins/`
    - Synology: `/var/packages/EmbyServer/var/plugins/`
 2. Restart Emby Server.
-3. Dashboard → Plugins → **Bingers**.
+3. Dashboard → **Advanced** → **Bingers** in the left menu (or Plugins → Bingers → Settings).
 
 ## Configure
 
@@ -99,6 +99,15 @@ would otherwise erase a Bingers watch.
 The plugin keeps its state (feed cursor, what Bingers has, queued changes) in
 `plugins/configurations/Emby.Bingers.state.json`. Deleting that file is equivalent to a full
 resync. Changing the token or the Emby user also starts a fresh sync automatically.
+
+## Data and privacy
+
+- The plugin talks only to Bingers' official API (`https://api.bingers.app/v1`) with the token
+  you create. It doesn't scrape any website and sends nothing anywhere else.
+- What it sends: the ids (IMDb/TMDB/TVDB), season and episode numbers, and watch times of the
+  movies and episodes the chosen Emby user watches. No file paths, user names or other library
+  data leave the server.
+- The token is stored in Emby's plugin configuration on your server.
 
 ## Not synced (yet)
 

@@ -39,6 +39,20 @@ namespace MediaBrowser.Common.Plugins
 
 namespace MediaBrowser.Model.Drawing { public enum ImageFormat { Bmp, Gif, Jpg, Png, Webp } }
 
+namespace MediaBrowser.Model.Plugins
+{
+    public class PluginPageInfo
+    {
+        public string Name { get; set; }
+        public string DisplayName { get; set; }
+        public bool EnableInMainMenu { get; set; }
+        public bool EnableInUserMenu { get; set; }
+        public string MenuSection { get; set; }
+        public string MenuIcon { get; set; }
+        public bool IsMainConfigPage { get; set; }
+    }
+}
+
 namespace MediaBrowser.Controller.Plugins
 {
     using Emby.Web.GenericEdit;
@@ -54,9 +68,11 @@ namespace MediaBrowser.Controller.Plugins
         protected virtual TOptionType OnBeforeShowUI(TOptionType options) => options;
         protected virtual void OnOptionsSaved(TOptionType options) { }
         protected virtual bool OnOptionsSaving(TOptionType options) => true;
+        protected virtual void OnCreatePageInfo(MediaBrowser.Model.Plugins.PluginPageInfo pageInfo) { }
 
         // Test hooks standing in for Emby's settings page.
         public TOptionType ShowUI() => this.OnBeforeShowUI(Stored);
+        public MediaBrowser.Model.Plugins.PluginPageInfo PageInfo() { var p = new MediaBrowser.Model.Plugins.PluginPageInfo { Name = this.Name }; this.OnCreatePageInfo(p); return p; }
         public void Save(TOptionType options) { Stored = options; this.OnOptionsSaved(options); }
     }
 

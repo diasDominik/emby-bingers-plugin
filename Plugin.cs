@@ -9,6 +9,7 @@ using MediaBrowser.Controller.Library;
 using MediaBrowser.Controller.Plugins;
 using MediaBrowser.Model.Drawing;
 using MediaBrowser.Model.Logging;
+using MediaBrowser.Model.Plugins;
 
 namespace Emby.Bingers
 {
@@ -43,6 +44,14 @@ namespace Emby.Bingers
 
         public Stream GetThumbImage()
             => this.GetType().Assembly.GetManifestResourceStream(this.GetType().Namespace + ".thumb.png");
+
+        protected override void OnCreatePageInfo(PluginPageInfo pageInfo)
+        {
+            base.OnCreatePageInfo(pageInfo);
+            pageInfo.EnableInMainMenu = true;
+            pageInfo.DisplayName = PluginName;
+            pageInfo.MenuIcon = "sync";
+        }
 
         protected override PluginOptions OnBeforeShowUI(PluginOptions options)
         {
